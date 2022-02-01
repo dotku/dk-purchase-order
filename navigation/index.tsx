@@ -20,6 +20,7 @@ import ModalScreen from "../screens/ModalScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
+import AboutScreen from "../screens/AboutScreen";
 import {
   RootStackParamList,
   RootTabParamList,
@@ -57,7 +58,8 @@ function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="About" component={ModalScreen} />
+        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="About" component={AboutScreen} />
       </Stack.Group>
       <Stack.Screen
         name="NotFound"
@@ -88,8 +90,11 @@ function BottomTabNavigator() {
         name="TabOne"
         component={TabOneScreen}
         options={({ navigation }: RootTabScreenProps<"TabOne">) => ({
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarShowLabel: false,
+          title: "Purchase Order Generator",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="file-text" color={color} />
+          ),
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate("About")}
@@ -112,9 +117,17 @@ function BottomTabNavigator() {
         component={TabTwoScreen}
         options={{
           title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
         }}
       />
+      {/* <BottomTab.Screen
+        name="About"
+        component={AboutScreen}
+        options={{
+          title: "About",
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      /> */}
     </BottomTab.Navigator>
   );
 }
