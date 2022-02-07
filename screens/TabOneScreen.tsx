@@ -9,6 +9,7 @@ import React from "react";
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
+  const [poNumber, setPoNumber] = React.useState(Math.trunc(Date.now() / 1000));
   const [company, setCompany] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [vendorAddress, setVendorAddress] = React.useState("");
@@ -32,8 +33,17 @@ export default function TabOneScreen({
     // >
     <ScrollView style={styles.container}>
       <TextInput
+        label="Purchase Order #"
+        placeholder="PO Number"
+        value={poNumber.toString()}
+        onChangeText={(pon) => setPoNumber(parseInt(pon))}
+        autoComplete={false}
+        keyboardType="numeric"
+      />
+      <TextInput
         label="Company Name"
         placeholder="Your Company"
+        autoFocus
         value={company}
         onChangeText={(com) => setCompany(com)}
         autoComplete={false}

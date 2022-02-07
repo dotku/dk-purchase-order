@@ -95,28 +95,30 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="file-text" color={color} />
           ),
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate("About")}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
+          headerRight: () => {
+            return null;
+            // <Pressable
+            //   onPress={() => navigation.navigate("About")}
+            //   style={({ pressed }) => ({
+            //     opacity: pressed ? 0.5 : 1,
+            //   })}
+            // >
+            //   <FontAwesome
+            //     name="info-circle"
+            //     size={25}
+            //     color={Colors[colorScheme].text}
+            //     style={{ marginRight: 15 }}
+            //   />
+            // </Pressable>;
+          },
         })}
       />
       <BottomTab.Screen
         name="TabTwo"
         component={TabTwoScreen}
         options={{
-          title: "Tab Two",
+          title: "About",
+          tabBarShowLabel: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
         }}
       />
