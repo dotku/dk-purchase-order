@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "purchase-order",
+    "name": "DK Purchase Order",
     "slug": "purchase-order",
     "version": "0.0.2",
     "orientation": "portrait",
@@ -15,12 +15,14 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dotku.purchaseorder"
+      "bundleIdentifier": "com.dotku.purchaseorder",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app help user to gernerate a purchase order form."
+      },
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {

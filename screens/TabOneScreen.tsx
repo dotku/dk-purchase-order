@@ -1,29 +1,91 @@
 import { StyleSheet, SafeAreaView, ScrollView, StatusBar } from "react-native";
-import { TextInput } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { shareAsync } from "expo-sharing";
+import { Button, TextInput } from "react-native-paper";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import { RootTabScreenProps } from "../types";
-import React from "react";
+import React, { useEffect } from "react";
+import { getPOHTML } from "../components/pdf";
+import * as Print from "expo-print";
 
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
   const [poNumber, setPoNumber] = React.useState(Math.trunc(Date.now() / 1000));
-  const [company, setCompany] = React.useState("");
-  const [address, setAddress] = React.useState("");
+  const [companyName, setCompanyName] = React.useState("");
+  const [companyAddress, setCompanyAddress] = React.useState("");
   const [vendorAddress, setVendorAddress] = React.useState("");
-  const [vendorCompany, setVendorCompany] = React.useState("");
-  const [itemDescription, setItemDescription] = React.useState(
-    `eg.
+  const [vendorName, setVendorName] = React.useState("");
+  const [itemDescription, setItemDescription] = React.useState(`
     2 x Cotton Shirt-S/Slim Fit, $200
     3 x Cotton Bag, $30
-    Total: $230`
-  );
-  const [note, setNote] = React.useState(
-    `It was great doing business with you.
-    \nUpon accepting this purchase order, you hereby agree to the terms & conditions.`
-  );
+    Total: $230
+  `);
+  const [note, setNote] = React.useState(`
+    It was great doing business with you.
+    Upon accepting this purchase order, you hereby agree to the terms & conditions.
+  `);
+
+  useEffect(() => {
+    const genData = async () => {
+      const prevCompanyName = await AsyncStorage.getItem("companyName");
+      const prevCompanyAddress = await AsyncStorage.getItem("companyAddress");
+      const prevVendorName = await AsyncStorage.getItem("vendorName");
+      const prevVendorAddress = await AsyncStorage.getItem("vendorAddress");
+      const prevItemDescription = await AsyncStorage.getItem("itemDescription");
+      const prevNote = await AsyncStorage.getItem("note");
+      setCompanyName(prevCompanyName || "");
+      setCompanyAddress(prevCompanyAddress || "");
+      setVendorName(prevVendorName || "");
+      setVendorAddress(prevVendorAddress || "");
+      setItemDescription(
+        prevItemDescription ||
+          `
+      2 x Cotton Shirt-S/Slim Fit, $200
+      3 x Cotton Bag, $30
+      Total: $230
+    `
+      );
+      setNote(
+        prevNote ||
+          `
+      It was great doing business with you.
+      Upon accepting this purchase order, you hereby agree to the terms & conditions.
+    `
+      );
+    };
+    genData();
+  }, []);
+
+  const printToFile = async () => {
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    const { uri } = await Print.printToFileAsync({
+      html: getPOHTML({
+        poNumber,
+        companyName,
+        companyAddress,
+        vendorName,
+        vendorAddress,
+        itemDescription,
+        footer: note,
+      }),
+    });
+    console.log("File has been saved to:", uri);
+    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+  };
+
+  const handleSaveOnPress = async () => {
+    await AsyncStorage.setItem("companyName", companyName);
+    await AsyncStorage.setItem("companyAddress", companyAddress);
+    await AsyncStorage.setItem("vendorName", vendorName);
+    await AsyncStorage.setItem("vendorAddress", vendorAddress);
+    await AsyncStorage.setItem("itemDescription", itemDescription);
+    await AsyncStorage.setItem("note", note);
+    await printToFile();
+  };
+
   return (
     // <SafeAreaView
     //   style={{
@@ -44,22 +106,22 @@ export default function TabOneScreen({
         label="Company Name"
         placeholder="Your Company"
         autoFocus
-        value={company}
-        onChangeText={(com) => setCompany(com)}
+        value={companyName}
+        onChangeText={(com) => setCompanyName(com)}
         autoComplete={false}
       />
       <TextInput
         label="Address"
-        value={address}
-        onChangeText={(addr) => setAddress(addr)}
+        value={companyAddress}
+        onChangeText={(addr) => setCompanyAddress(addr)}
         autoComplete={false}
         multiline={true}
       />
       <TextInput
         label="Vendor Company Name"
         placeholder="Your Company"
-        value={vendorCompany}
-        onChangeText={(com) => setVendorCompany(com)}
+        value={vendorName}
+        onChangeText={(com) => setVendorName(com)}
         autoComplete={false}
       />
       <TextInput
@@ -70,7 +132,7 @@ export default function TabOneScreen({
         multiline={true}
       />
       <TextInput
-        label="Item Description"
+        label="Item(s) Description"
         value={itemDescription}
         onChangeText={(itemDesc) => setItemDescription(itemDesc)}
         autoComplete={false}
@@ -83,6 +145,9 @@ export default function TabOneScreen({
         autoComplete={false}
         multiline={true}
       />
+      <Button style={{ marginVertical: 10 }} onPress={handleSaveOnPress}>
+        Save
+      </Button>
     </ScrollView>
     // </SafeAreaView>
   );
